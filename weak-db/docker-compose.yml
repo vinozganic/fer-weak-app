@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: weak-database
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: weak-database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
+    restart: always
+    ports:
+      - "5436:5432"

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Greeting Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <style>
+    /* Basic styling for responsiveness */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 600px; margin: auto; }
+    .toggle { margin-bottom: 20px; }
+    input[type="text"], textarea { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 10px 15px; }
+  </style> -->
+</head>
+<body>
+  <div class="container">
+    <h1>Custom Greeting Demo</h1>
+
+    <form action="/toggle-xss" method="post" class="toggle">
+      <label for="xssToggle">XSS Vulnerability:</label>
+      <input type="checkbox" id="xssToggle" name="xssToggle"
+        <% if (xssVulnerabilityEnabled) { %>checked<% } %>
+        onchange="this.form.submit()">
+      <span><%= xssVulnerabilityEnabled ? 'Enabled' : 'Disabled' %></span>
+    </form>
+
+    <% if (!isAuthenticated) { %>
+      <!-- Login Form -->
+      <h2>Login</h2>
+      <form action="/login" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Login</button>
+      </form>
+    <% } else { %>
+      <!-- Greeting and Custom Message Form -->
+      <p>Welcome, <%= username %>!</p>
+      <% if (customMessage) { %>
+        <h3>Your Greeting Message:</h3>
+        <p><%- customMessage %></p>
+      <% } %>
+      <h3>Set Your Greeting Message:</h3>
+      <form action="/message" method="post">
+        <textarea name="customMessage" rows="4" required></textarea>
+        <button type="submit">Update Message</button>
+      </form>
+      <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    <% } %>
+  </div>
+</body>
+</html>
