@@ -3,25 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker Logs</title>
-</head>
-<body>
-    <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th style="width: 20%;">Time</th>
-                <th style="width: 60%;">Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% hackerLogEntries.forEach(function(entry) { %>
-            <tr>
-                <td><%= entry.created %></td>
-                <td><%= entry.message %></td>
-            </tr>
-            <% }); %>
-        </tbody>
-    </table>
+    <title>Napadačeva stranica</title>
     <style>
         body {
             margin: 0px;
@@ -46,5 +28,23 @@
             font-family: monospace;
         }
     </style>
+</head>
+<body>
+    <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Time</th>
+                <th style="width: 60%;">Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% hackerLogEntries.forEach(function(entry) { %>
+            <tr>
+                <td><%= entry.created %></td>
+                <td><%= entry.message %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
 </body>
 </html>

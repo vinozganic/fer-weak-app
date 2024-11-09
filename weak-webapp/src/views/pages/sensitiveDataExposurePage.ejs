@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nesigurna pohrana osjetljivih podataka</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #ddedea;
+        }
+        .center-container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+        }
+        .sde-toggle-container {
+            display: flex;
+            width: 700px;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            font-size: 20px;
+            color: red;
+            font-weight: bolder;
+        }
+        .profile-container {
+            position: relative;
+            background-color: #e8dff5;
+            width: 700px;
+            height: fit-content;
+            margin: 10px 0px;
+            padding: 20px;
+            border: 4px solid black;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .instructions-container {
+            border: 1px solid #2c3e50;
+            background-color: #daeaf6;
+            padding: 20px;
+            margin: 10px 0;
+            width: 560px;
+        }
+        .instruction-section {
+            margin: 20px 0;
+            padding-left: 15px;
+            border-left: 3px solid #007bff;
+        }
+        .instruction-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .auth-container form,
+        .users-container {
+            overflow: auto;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .navigator-buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red;
+            font-style: bold !important;
+        }
+        .note {
+            color: #666;
+            font-style: italic;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nesigurna pohrana osjetljivih podataka</h1>
+        <div class="sde-toggle-container">
+            <form action="/toggle-sde" method="post" class="toggle">
+                <label id="sdeToggleLabel" for="sdeToggle">
+                    Nesigurna pohrana omogućena:
+                </label>
+                <input 
+                    type="checkbox" 
+                    id="sdeToggle" 
+                    name="sdeToggle"
+                    <% if (sdeVulnerabilityEnabled) { %>checked<% } %>
+                    onchange="this.form.submit()"
+                >
+            </form>
+        </div>
+        <div class="center-container">
+            <div class="profile-container">
+                <% if (!isAuthenticated) { %>
+                    <!-- Registration Form -->
+                    <h2>Registracija</h2>
+                    <form action="/register" method="post">
+                        <label for="username">Korisničko ime:</label>
+                        <input type="text" id="username" name="username" required>
+                        <label for="password">Lozinka:</label>
+                        <input type="password" id="password" name="password" required>
+                        <button type="submit">Registriraj se</button>
+                    </form>
+                    <% if (registerError) { %>
+                        <span class="error-message">Korisničko ime zauzeto. (Nesiguran error message - implementiran ovako samo radi lakše implementacije)</span>
+                    <% } %>
+                    <!-- Login Form -->
+                    <h2>Prijava</h2>
+                    <form action="/login-sde" method="post">
+                        <label for="login-username">Korisničko ime:</label>
+                        <input type="text" id="login-username" name="username" required>
+                        <label for="login-password">Lozinka:</label>
+                        <input type="password" id="login-password" name="password" required>
+                        <button type="submit">Prijavi se</button>
+                    </form>
+                    <% if (loginError) { %>
+                        <span class="error-message">Pogreška pri prijavi. Krivo korisničko ime ili lozinka.</span>
+                    <% } %>
+                <% } else { %>
+                    <!-- Welcome and Logout -->
+                    <h2>Dobrodošli, <%= username %></h2>
+                    <form action="/logout-sde" method="post">
+                        <button type="submit">Odjavi se</button>
+                    </form>
+                    <!-- Users Table -->
+                    <div class="users-container">
+                        <h3>Pohranjeni korisnici i lozinke</h3>
+                        <table>
+                            <tr>
+                                <th>Korisničko ime</th>
+                                <th>Lozinka</th>
+                            </tr>
+                            <% users.forEach(function(user) { %>
+                                <tr>
+                                    <td><%= user.username %></td>
+                                    <td><%= user.password %></td>
+                                </tr>
+                            <% }); %>
+                        </table>
+                    </div>
+                <% } %>
+                <div class="navigator-buttons">
+                    <form action="/" method="get">
+                        <button type="submit">Početna stranica</button>
+                    </form>
+                    <form action="/xss" method="get">
+                        <button type="submit">XSS ranjivost</button>
+                    </form>
+                </div>
+            </div>
+            <div class="instructions-container">
+                <h2>Upute</h2>
+                <div class="instruction-section">
+                    <h3>1. Registrirajte račun</h3>
+                    <p>Kreirajte novi korisnički račun ispunjavanjem obrasca za registraciju. Koristite bilo koje korisničko ime i lozinku.</p>
+                    <p class="note">Nema postavljenih restrikcijskih pravila na kompleksnost lozinke, korisničkog imena i slično zbog jednostavnosti.</p>
+                    <p class="note">Korisnik će nakon registracije biti automatski prijavljen. Također zbog jednostavnosti.</p>
+                </div>
+                <div class="instruction-section">
+                    <h3>2. Pregled pohranjenih parova korisničko ime - lozinka</h3>
+                    <p>Nakon registracije/prijave, možete vidjeti sve pohranjene korisničke račune i lozinke u tablici iznad.</p>
+                    <p>• Kada je ranjivost omogućena, lozinke su pohranjene u čistom tekstu, što ih čini vidljivima i nesigurnima.</p>
+                    <p>• Kada je ranjivost onemogućena, lozinke su hashirane, što uvelike povećava sigurnost i onemogućuje napadačima lagan pristup.</p>
+                </div>
+                <div class="instruction-section">
+                    <h3>3. Prebacivanje ranjivosti</h3>
+                    <p>Kliknite na potvrdni okvir pored crvenog teksta "Nesigurna pohrana omogućena" kako biste prebacili između načina rada.</p>
+                    <p>Uočite kako se lozinke u tablici mijenjaju između čistog teksta i hashiranih verzija.</p>
+                </div>
+                <div class="instruction-section">
+                    <h3>Razumijevanje ranjivosti</h3>
+                    <p>Ovaj primjer demonstrira kako pohranjivanje lozinki u čistom tekstu može dovesti do izlaganja osjetljivih podataka. Ispravno hashiranje lozinki štiti korisničke podatke čak i ako je baza podataka kompromitirana.</p>
+                </div>
+                <p class="note">Napomena: Prijava na ovoj stranici razlikuje se od prijave na stranici za prikaz XSS nesigurnosti. To znači da ako ste s jednim korisnikom prijavljeni ovjde, nećete tamo biti prijavljeni s istim tim korisnikom.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
