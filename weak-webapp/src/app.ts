@@ -2,34 +2,37 @@ import express from 'express';
 import path from 'path';
 import session from 'express-session';
 import routes from './routes/index';
-import FileStore from 'session-file-store';
 import * as dotenv from 'dotenv';
-import fs from 'fs';
+import { AppDataSource } from './db';
 
-// Initialize dotenv
 dotenv.config();
+
+AppDataSource.initialize()
+    .then(() => {
+        console.log('TypeORM Data Source has been initialized!');
+    })
+    .catch((err) => {
+        console.error('Error during Data Source initialization', err);
+    });
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // Changed to true
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Initialize session file store
-const fileStore = FileStore(session);
-const sessionsPath = path.join(__dirname, '../sessions');
-if (!fs.existsSync(sessionsPath)) fs.mkdirSync(sessionsPath);
+// Basic MemoryStore (intentionally vulnerable)
 app.use(
     session({
-        store: new fileStore({
-            path: sessionsPath,
-        }),
-        secret: process.env.SESSION_SECRET ?? 'default-secret',
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: !!process.env.ENV_NAME },
+        secret: 'weak-secret-key',
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+            secure: false,
+            httpOnly: false,
+        },
     })
 );
 

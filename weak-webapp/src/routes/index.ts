@@ -1,57 +1,64 @@
 import express from 'express';
-import { handleErrorRoute } from '../utils/handleErrorRoute';
+import { escapeHtml } from '../utils/escapeHtml';
+import { AppDataSource } from '../db';
+import { HackerLogEntry } from '../entities/hackerLogEntry';
 
 const router = express.Router();
 
+router.get('/', (req: any, res: any) => {
+    res.render('pages/homePage');
+});
+
 let xssVulnerabilityEnabled = true;
 
-// Route to render the page
-router.get('/', (req: any, res: any) => {
+router.get('/xss', (req: any, res: any) => {
     res.render('pages/xssPage', {
         isAuthenticated: !!req.session.username,
         username: req.session.username,
-        customMessage: req.session.customMessage,
+        profileDescription: req.session.profileDescription,
         xssVulnerabilityEnabled,
     });
 });
 
-// Route to handle login
 router.post('/login', (req: any, res: any) => {
-    req.session.username = req.body.username || 'Guest';
-    res.redirect('/');
+    req.session.username = req.body.username || 'guest';
+    res.redirect('/xss');
 });
 
-// Route to handle logout
 router.post('/logout', (req: any, res: any) => {
     req.session.destroy(() => {
-        res.redirect('/');
+        res.clearCookie('connect.sid');
+        res.redirect('/xss');
     });
 });
 
-// Route to handle custom message submission
-router.post('/message', (req: any, res: any) => {
-    let customMessage = req.body.customMessage || '';
+router.post('/profileDescription', (req: any, res: any) => {
+    let profileDescription = req.body.profileDescription || '';
     if (!xssVulnerabilityEnabled) {
-        customMessage = escapeHtml(customMessage);
+        profileDescription = escapeHtml(profileDescription);
     }
-    req.session.customMessage = customMessage;
-    res.redirect('/');
+    req.session.profileDescription = profileDescription;
+    res.redirect('/xss');
 });
 
-// Toggle XSS vulnerability
 router.post('/toggle-xss', (req: any, res: any) => {
     xssVulnerabilityEnabled = !xssVulnerabilityEnabled;
-    res.redirect('/');
+    res.redirect('/xss');
 });
 
-// Simple HTML escape function
-function escapeHtml(text: string) {
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
+router.get('/mock-hacker-page', async (req: any, res: any) => {
+    if (req.query.message) {
+        const hackerLogEntry = new HackerLogEntry();
+        hackerLogEntry.message = req.query.message;
+        await AppDataSource.manager.insert(HackerLogEntry, hackerLogEntry);
+    } else {
+        const hackerLogEntries = await AppDataSource.manager.find(HackerLogEntry, {
+            order: {
+                created: 'DESC',
+            },
+        });
+        res.render('pages/mockHackerPage', { hackerLogEntries });
+    }
+});
 
 export default router;

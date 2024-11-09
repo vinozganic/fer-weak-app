@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Logs</title>
+</head>
+<body>
+    <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Time</th>
+                <th style="width: 60%;">Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% hackerLogEntries.forEach(function(entry) { %>
+            <tr>
+                <td><%= entry.created %></td>
+                <td><%= entry.message %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <style>
+        body {
+            margin: 0px;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #0f0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        th {
+            background: #0f0;
+            color: #000;
+        }
+        table {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+        }
+    </style>
+</body>
+</html>

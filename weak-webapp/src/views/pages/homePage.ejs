@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Početna stranica</title>
+    </head>
+    <body>
+        <h1>Početna stranica</h1>
+        <h2>Napredni razvoj programske potpore za web - Projekt 2</h2>
+        <h3>Jakov Vinožganić</h3>
+        <hr />
+        <br />
+        <div class="h3-title-container">
+            <a class="h3-title" href="/xss">Primjer XSS ranjivosti</a>
+            <a class="h3-title" href="/sensitive-data-exposure">Nesigurna pohrana osjetljivih podataka</a>
+        </div>
+        <style>
+            body {
+                background-color: #ddedea;
+                .h3-title {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+            }
+            hr {
+                border-top: 2px solid black;
+            }
+            .h3-title-container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .h3-title {
+                text-decoration: none;
+            }
+            .h3-title:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </body>
+</html>
