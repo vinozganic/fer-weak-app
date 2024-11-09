@@ -21,6 +21,8 @@ router.get('/xss', (req: any, res: any) => {
         username: req.session.username,
         profileDescription: req.session.profileDescription,
         xssVulnerabilityEnabled,
+        protocol: req.protocol,
+        host: req.get('host')
     });
 });
 

