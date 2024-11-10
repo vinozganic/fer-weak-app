@@ -49,7 +49,10 @@ router.post('/profileDescription', (req: any, res: any) => {
 
 router.post('/toggle-xss', (req: any, res: any) => {
     xssVulnerabilityEnabled = !xssVulnerabilityEnabled;
-    res.redirect('/xss');
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.redirect('/xss');
+    });
 });
 
 // Hacker's page
@@ -139,7 +142,10 @@ router.post('/logout-sde', (req: any, res: any) => {
 
 router.post('/toggle-sde', (req: any, res: any) => {
     sdeVulnerabilityEnabled = !sdeVulnerabilityEnabled;
-    res.redirect('/sensitive-data-exposure');
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.redirect('/sensitive-data-exposure');
+    });
 });
 
 export default router;
