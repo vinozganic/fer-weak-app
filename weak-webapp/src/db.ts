@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { join } from 'path';
+import { User } from './entities/user';
+import { HackerLogEntry } from './entities/hackerLogEntry';
 
 dotenv.config();
 
@@ -20,5 +21,5 @@ export const AppDataSource = new DataSource({
             rejectUnauthorized: false,
         },
     },
-    entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+    entities: [User, HackerLogEntry],
 });
