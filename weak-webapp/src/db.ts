@@ -15,5 +15,10 @@ export const AppDataSource = new DataSource({
     synchronize: true,
     logging: false,
     ssl: true,
-    entities: [join(__dirname, '**', '*.entity.{ts,js}')]
+    extra: {
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    },
+    entities: [join(__dirname, '**', '*.entity.{ts,js}')],
 });
